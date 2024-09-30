@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <div id="messages"></div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                const p = document.createElement('p');
+                p.textContent = `Bienvenido, ${username}`;
+                document.getElementById('messages').appendChild(p);
+                fetchMessages(username);
+            } else {
+                const p = document.createElement('p');
+                p.textContent = result.message;
+                document.getElementById('messages').appendChild(p);
+            }
+        });
+
+        async function fetchMessages(username) {
+            const response = await fetch(`/messages?username=${username}`);
+            const result = await response.json();
+
+            if (response.ok) {
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML = '<h2>Mensajes:</h2>';
+                result.mensajes.forEach(mensaje => {
+                    const p = document.createElement('p');
+                    p.textContent = `${mensaje.user}: ${mensaje.texto}`;
+                    messagesDiv.appendChild(p);
+                });
+            } else {
+                alert(result.message);
+            }
+        }
+    </script>
+</body>
+</html>

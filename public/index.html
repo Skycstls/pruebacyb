@@ -7,7 +7,28 @@
 </head>
 <body>
     <h1>Bienvenido al Servidor!</h1>
-    <ul>
-    </ul>
+    <p>
+      Aun estamos trabajando en la página. Mientras tanto, los registros son privados.
+    </p>
+    <p>
+      El ultimo usuario registrado fue: <strong id="last"></strong>
+    </p>
+    <!-- 
+      <a href="/login.html">Login</a>
+    -->
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const response = await fetch('/last-user');
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          document.getElementById('last').textContent = data.username;
+        } catch (error) {
+          console.error('Error fetching last user:', error);
+        }
+      });
+    </script>
 </body>
 </html>
